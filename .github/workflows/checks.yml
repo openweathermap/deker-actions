@@ -18,7 +18,7 @@ jobs:
 
   linters:
     env:
-      PACKAGE_NAME: {{ inputs.project-name }}
+      PACKAGE_NAME: ${{ inputs.project-name }}
       PYTHON_V: \'${{ inputs.python-version }}\'
     needs: setup
     runs-on: ubuntu-latest
