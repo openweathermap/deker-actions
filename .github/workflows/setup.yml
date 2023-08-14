@@ -1,11 +1,11 @@
+name: setup
+
 on:
   workflow_call:
     inputs:
       python-version:
         required: true
         type: string
-
-name: setup_${{ inputs.python-version }}
 
 jobs:
   setup:
