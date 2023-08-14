@@ -47,7 +47,7 @@ jobs:
           flake8 ./${{ inputs.project-name }} --verbose
           echo
           echo '******* MYPY *******`
-          mypy ./${{ inputs.project-name }} --install-types --non-interactive --config-file pyproject.toml
+          mypy ./${{ inputs.project-name }} --install-types --non-interactive --c.gitignoreonfig-file pyproject.toml
         env:
           PIP_DISABLE_PIP_VERSION_CHECK: 1
 
