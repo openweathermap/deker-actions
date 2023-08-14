@@ -12,7 +12,7 @@ on:
 
 jobs:
   setup:
-    uses: ./.github/workflows/create_environment.yml
+    uses: ./.github/workflows/setup.yml
     with:
       python-version: ${{ inputs.python-version }}
 
