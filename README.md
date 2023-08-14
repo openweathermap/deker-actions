@@ -1,1 +1,3 @@
-# This repo contains reusable GitHub CI workflows for all deker repositories 
+# Reusable GitHub CI Workflows for Deker
+
+This repo contains reusable workflows for Dejer projects.
