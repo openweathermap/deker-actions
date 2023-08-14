@@ -39,13 +39,13 @@ jobs:
           source .venv/bin/activate
           echo '******* ISORT *******`
           isort ./${{ inputs.project-name }}
-          echo
+          echo ''
           echo '******* BLACK *******`
           black ./${{ inputs.project-name }}
-          echo
+          echo ''
           echo '******* FLAKE8 *******`
           flake8 ./${{ inputs.project-name }} --verbose
-          echo
+          echo ''
           echo '******* MYPY *******`
           mypy ./${{ inputs.project-name }} --install-types --non-interactive --c.gitignoreonfig-file pyproject.toml
         env:
