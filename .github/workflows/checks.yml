@@ -17,8 +17,6 @@ jobs:
       python-version: ${{ inputs.python-version }}
 
   linters:
-    env:
-      PACKAGE_NAME: ${{ inputs.project-name }} 
     needs: setup
     runs-on: ubuntu-latest
     steps:
@@ -38,14 +36,11 @@ jobs:
 
       - name: Run linters and checks
         run: |
-          echo '********************************************'
-          echo Checks for $PACKAGE_NAME on ${{ inputs.python-version }}
-          echo '********************************************'
           source .venv/bin/activate
-          isort $PACKAGE_NAME
-          black $PACKAGE_NAME
-          flake8 $PACKAGE_NAME --verbose
-          mypy $PACKAGE_NAME --install-types --non-interactive --config-file pyproject.toml
+          isort ${{ inputs.project-name }}
+          black ${{ inputs.project-name }}
+          flake8 ${{ inputs.project-name }}
+          mypy ${{ inputs.project-name }} --install-types --non-interactive --config-file pyproject.toml
         env:
           PIP_DISABLE_PIP_VERSION_CHECK: 1
 
