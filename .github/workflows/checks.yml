@@ -10,6 +10,8 @@ on:
         required: true
         type: string
 
+run-name: Python ${{ inputs.python-version }} checks
+
 jobs:
   setup:
     uses: ./.github/workflows/setup.yml
@@ -37,17 +39,10 @@ jobs:
       - name: Run linters and checks
         run: |
           source .venv/bin/activate
-          echo '******* ISORT *******`
           isort ./${{ inputs.project-name }}
-          echo ''
-          echo '******* BLACK *******`
           black ./${{ inputs.project-name }}
-          echo ''
-          echo '******* FLAKE8 *******`
           flake8 ./${{ inputs.project-name }} --verbose
-          echo ''
-          echo '******* MYPY *******`
-          mypy ./${{ inputs.project-name }} --install-types --non-interactive --c.gitignoreonfig-file pyproject.toml
+          mypy ./${{ inputs.project-name }} --install-types --non-interactive --config-file pyproject.toml
         env:
           PIP_DISABLE_PIP_VERSION_CHECK: 1
 
