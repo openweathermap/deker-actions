@@ -17,6 +17,9 @@ jobs:
       python-version: ${{ inputs.python-version }}
 
   linters:
+    env:
+      PACKAGE_NAME: ./${{ inputs.project-name }}
+      PY_VERSION: ${{ inputs.python-version }}
     needs: setup
     runs-on: ubuntu-latest
     steps:
@@ -26,24 +29,24 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v3
         with:
-          python-version: ${{ inputs.python-version }}
+          python-version: $PY_VERSION
 
       - name: Load virtual environment
         uses: actions/cache@v2
         with:
           path: .venv
-          key: ${{ runner.os }}-venv-${{ inputs.python-version }}-${{ hashFiles('pyproject.toml', 'poetry.lock') }}
+          key: ${{ runner.os }}-venv-$PY_VERSION-${{ hashFiles('pyproject.toml', 'poetry.lock') }}
 
       - name: Run linters and checks
         run: |
           echo '********************************************'
-          echo Checks for /.${{ inputs.project-name }} on ${{ inputs.python-version }}
+          echo Checks for $PACKAGE_NAME on $PY_VERSION
           echo '********************************************'
           source .venv/bin/activate
-          isort ./${{ inputs.project-name }}
-          black ./${{ inputs.project-name }}
-          flake8 ./${{ inputs.project-name }} --verbose
-          mypy ./${{ inputs.project-name }} --install-types --non-interactive --config-file pyproject.toml
+          isort $PACKAGE_NAME
+          black $PACKAGE_NAME
+          flake8 $PACKAGE_NAME --verbose
+          mypy $PACKAGE_NAME --install-types --non-interactive --config-file pyproject.toml
         env:
           PIP_DISABLE_PIP_VERSION_CHECK: 1
 
