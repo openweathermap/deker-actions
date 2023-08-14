@@ -6,7 +6,7 @@ on:
       python-version:
         required: true
         type: string
-      project-name:
+      package-name:
         required: true
         type: string
 
@@ -37,10 +37,10 @@ jobs:
       - name: Run linters and checks
         run: |
           source .venv/bin/activate
-          isort ${{ inputs.project-name }}
-          black ${{ inputs.project-name }}
-          flake8 ${{ inputs.project-name }}
-          mypy ${{ inputs.project-name }} --install-types --non-interactive --config-file pyproject.toml
+          isort ${{ inputs.package-name }}
+          black ${{ inputs.package-name }}
+          flake8 ${{ inputs.package-name }}
+          mypy ${{ inputs.package-name }} --install-types --non-interactive --config-file pyproject.toml
         env:
           PIP_DISABLE_PIP_VERSION_CHECK: 1
 
