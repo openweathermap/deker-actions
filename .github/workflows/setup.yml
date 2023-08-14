@@ -7,8 +7,6 @@ on:
         required: true
         type: string
 
-run-name: Python ${{ inputs.python-version }} setup
-
 jobs:
   setup:
     runs-on: ubuntu-latest

@@ -10,8 +10,6 @@ on:
         required: true
         type: string
 
-run-name: Python ${{ inputs.python-version }} checks
-
 jobs:
   setup:
     uses: ./.github/workflows/setup.yml
@@ -38,6 +36,9 @@ jobs:
 
       - name: Run linters and checks
         run: |
+          echo '********************************************'
+          echo Checks for /.${{ inputs.project-name }} on ${{ inputs.python-version }}
+          echo '********************************************'
           source .venv/bin/activate
           isort ./${{ inputs.project-name }}
           black ./${{ inputs.project-name }}
