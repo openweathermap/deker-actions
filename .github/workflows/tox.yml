@@ -14,7 +14,6 @@ jobs:
       python-version: "3.9"
       package-name: ${{ inputs.package-name }}
 
-
   py310:
     uses: ./.github/workflows/checks.yml
     with:
