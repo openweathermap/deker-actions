@@ -19,7 +19,7 @@ jobs:
   linters:
     env:
       PACKAGE_NAME: ./${{ inputs.project-name }}
-      PY_VERSION: ${{ inputs.python-version }}
+      PYTHON_V: ${{ inputs.python-version }}
     needs: setup
     runs-on: ubuntu-latest
     steps:
@@ -29,18 +29,18 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v3
         with:
-          python-version: $PY_VERSION
+          python-version: $PYTHON_V
 
       - name: Load virtual environment
         uses: actions/cache@v2
         with:
           path: .venv
-          key: ${{ runner.os }}-venv-$PY_VERSION-${{ hashFiles('pyproject.toml', 'poetry.lock') }}
+          key: ${{ runner.os }}-venv-$PYTHON_V-${{ hashFiles('pyproject.toml', 'poetry.lock') }}
 
       - name: Run linters and checks
         run: |
           echo '********************************************'
-          echo Checks for $PACKAGE_NAME on $PY_VERSION
+          echo Checks for $PACKAGE_NAME on $PYTHON_V
           echo '********************************************'
           source .venv/bin/activate
           isort $PACKAGE_NAME
