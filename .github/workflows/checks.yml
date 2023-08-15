@@ -74,9 +74,9 @@ jobs:
         with:
           timeout_minutes: 60
           max_attempts: 3
-        run: |
-          source .venv/bin/activate
-          pytest --random-order --junitxml=tests.xml
+          command: |
+            source .venv/bin/activate
+            pytest --random-order --junitxml=tests.xml
         env:
           PIP_DISABLE_PIP_VERSION_CHECK: 1
 
@@ -110,11 +110,11 @@ jobs:
         with:
           timeout_minutes: 60
           max_attempts: 3
-        command: |
-          source .venv/bin/activate
-          coverage run -m pytest --junitxml=report.xml
-          coverage report --fail-under=92
-          coverage xml
+          command: |
+            source .venv/bin/activate
+            coverage run -m pytest --junitxml=report.xml
+            coverage report --fail-under=92
+            coverage xml
         env:
           PIP_DISABLE_PIP_VERSION_CHECK: 1
 
