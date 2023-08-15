@@ -74,7 +74,7 @@ jobs:
         with:
           timeout_minutes: 60
           max_attempts: 3
-        command: |
+        run: |
           source .venv/bin/activate
           pytest --random-order --junitxml=tests.xml
         env:
