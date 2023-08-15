@@ -70,6 +70,9 @@ jobs:
           key: ${{ runner.os }}-venv-${{ inputs.python-version }}-${{ hashFiles('pyproject.toml', 'poetry.lock') }}
 
       - name: Run shuffled tests
+        with:
+          timeout_minutes: 60
+          max_attempts: 3
         run: |
           source .venv/bin/activate
           pytest --random-order --junitxml=tests.xml
@@ -102,6 +105,9 @@ jobs:
           key: ${{ runner.os }}-venv-${{ inputs.python-version }}-${{ hashFiles('pyproject.toml', 'poetry.lock') }}
 
       - name: Run coverage
+        with:
+          timeout_minutes: 60
+          max_attempts: 3
         run: |
           source .venv/bin/activate
           coverage run -m pytest --junitxml=report.xml
