@@ -70,10 +70,11 @@ jobs:
           key: ${{ runner.os }}-venv-${{ inputs.python-version }}-${{ hashFiles('pyproject.toml', 'poetry.lock') }}
 
       - name: Run shuffled tests
+        uses: nick-fields/retry@v2
         with:
           timeout_minutes: 60
           max_attempts: 3
-        run: |
+        command: |
           source .venv/bin/activate
           pytest --random-order --junitxml=tests.xml
         env:
@@ -105,10 +106,11 @@ jobs:
           key: ${{ runner.os }}-venv-${{ inputs.python-version }}-${{ hashFiles('pyproject.toml', 'poetry.lock') }}
 
       - name: Run coverage
+        uses: nick-fields/retry@v2
         with:
           timeout_minutes: 60
           max_attempts: 3
-        run: |
+        command: |
           source .venv/bin/activate
           coverage run -m pytest --junitxml=report.xml
           coverage report --fail-under=92
