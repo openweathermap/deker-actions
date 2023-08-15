@@ -9,6 +9,9 @@ on:
       package-name:
         required: true
         type: string
+      min-coverage:
+        required: true
+        type: number
 
 jobs:
   setup:
@@ -113,7 +116,7 @@ jobs:
           command: |
             source .venv/bin/activate
             coverage run -m pytest --junitxml=report.xml
-            coverage report --fail-under=92
+            coverage report --fail-under=${{inputs.min_coverage}}
             coverage xml
         env:
           PIP_DISABLE_PIP_VERSION_CHECK: 1

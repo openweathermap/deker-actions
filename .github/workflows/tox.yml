@@ -6,6 +6,9 @@ on:
       package-name:
         required: true
         type: string
+      min-coverage:
+        required: true
+        type: number
 
 jobs:
   py39:
@@ -13,15 +16,18 @@ jobs:
     with:
       python-version: "3.9"
       package-name: ${{ inputs.package-name }}
+      min-coverage: ${{ inputs.min-coverage }}
 
   py310:
     uses: ./.github/workflows/checks.yml
     with:
       python-version: "3.10"
       package-name: ${{ inputs.package-name }}
+      min-coverage: ${{ inputs.min-coverage }}
 
   py311:
     uses: ./.github/workflows/checks.yml
     with:
       python-version: "3.11"
       package-name: ${{ inputs.package-name }}
+      min-coverage: ${{ inputs.min-coverage }}
