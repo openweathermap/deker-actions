@@ -116,7 +116,7 @@ jobs:
           command: |
             source .venv/bin/activate
             coverage run -m pytest
-            coverage report --fail-under=${{inputs.min_coverage}}
+            coverage report --fail-under=${{inputs.min-coverage}}
             coverage xml
         env:
           PIP_DISABLE_PIP_VERSION_CHECK: 1
