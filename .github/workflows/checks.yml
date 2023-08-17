@@ -115,7 +115,7 @@ jobs:
           max_attempts: 3
           command: |
             source .venv/bin/activate
-            coverage run -m pytest --junitxml=report.xml
+            coverage run -m pytest
             coverage report --fail-under=${{inputs.min_coverage}}
             coverage xml
         env:
@@ -127,3 +127,10 @@ jobs:
         with:
           name: coverage-reports
           path: coverage.xml
+
+      - name: Upload coverage reports to Codecov
+#        if: ${{ github.ref == 'refs/heads/main' && github.repository == 'openweathermap/deker'}}
+        if: ${{ github.repository == 'openweathermap/deker'}}
+        uses: codecov/codecov-action@v3
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
