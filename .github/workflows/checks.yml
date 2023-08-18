@@ -9,10 +9,8 @@ on:
       min-coverage:
         required: true
         type: number
-    secrets:
-      PACKAGE_NAME:
-        description: 'Caller package name'
-        required: true
+env:
+  PACKAGE_NAME: ${{ secrets.PACKAGE_NAME }}
 
 jobs:
   setup:
@@ -41,13 +39,15 @@ jobs:
       - name: Run linters and checks
         run: |
           source .venv/bin/activate
-          echo ${{ secrets.PACKAGE_NAME }}
+          echo $PACKAGE_NAME
+          echo $PACKAGE_NAME_1
           isort ${{ secrets.PACKAGE_NAME }}
           black ${{ secrets.PACKAGE_NAME }}
           flake8 ${{ secrets.PACKAGE_NAME }}
           mypy ${{ secrets.PACKAGE_NAME }} --install-types --non-interactive --config-file pyproject.toml
         env:
           PIP_DISABLE_PIP_VERSION_CHECK: 1
+          PACKAGE_NAME_1: ${{ secrets.PACKAGE_NAME }}
 
       - name: Save linter reports
         if: always()
