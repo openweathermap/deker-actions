@@ -2,10 +2,6 @@ name: publish_docs
 
 on:
   workflow_call:
-    inputs:
-      python-version:
-        required: true
-        type: string
 
 jobs:
   publish_docs:
