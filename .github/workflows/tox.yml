@@ -6,9 +6,8 @@ on:
       min-coverage:
         required: true
         type: number
-    secrets:
-      PACKAGE_NAME:
-        description: 'Caller package name'
+      package-name:
+        type: string
         required: true
 
 jobs:
@@ -16,19 +15,19 @@ jobs:
     uses: ./.github/workflows/checks.yml
     with:
       python-version: "3.9"
-      package-name: ${{ secrets.PACKAGE_NAME }}
+      package-name: ${{ inputs.package-name }}
       min-coverage: ${{ inputs.min-coverage }}
 
   py310:
     uses: ./.github/workflows/checks.yml
     with:
       python-version: "3.10"
-      package-name: ${{ secrets.PACKAGE_NAME }}
+      package-name: ${{ inputs.package-name }}
       min-coverage: ${{ inputs.min-coverage }}
 
   py311:
     uses: ./.github/workflows/checks.yml
     with:
       python-version: "3.11"
-      package-name: ${{ secrets.PACKAGE_NAME }}
+      package-name: ${{ inputs.package-name }}
       min-coverage: ${{ inputs.min-coverage }}
