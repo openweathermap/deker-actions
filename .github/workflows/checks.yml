@@ -12,8 +12,6 @@ on:
       min-coverage:
         required: true
         type: number
-env:
-  PACKAGE_NAME: ${{ inputs.package-name }}
 
 jobs:
   setup:
