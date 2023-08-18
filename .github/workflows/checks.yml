@@ -3,6 +3,9 @@ name: checks
 on:
   workflow_call:
     inputs:
+      package-name:
+        required: true
+        type: string
       python-version:
         required: true
         type: string
@@ -10,7 +13,7 @@ on:
         required: true
         type: number
 env:
-  PACKAGE_NAME: ${{ secrets.PACKAGE_NAME }}
+  PACKAGE_NAME: ${{ inputs.package-name }}
 
 jobs:
   setup:
@@ -40,14 +43,13 @@ jobs:
         run: |
           source .venv/bin/activate
           echo $PACKAGE_NAME
-          echo $PACKAGE_NAME_1
-          isort ${{ secrets.PACKAGE_NAME }}
-          black ${{ secrets.PACKAGE_NAME }}
-          flake8 ${{ secrets.PACKAGE_NAME }}
-          mypy ${{ secrets.PACKAGE_NAME }} --install-types --non-interactive --config-file pyproject.toml
+          echo ${{ inputs.package-name }}
+          isort ${{ inputs.package-name }}
+          black ${{ inputs.package-name }}
+          flake8 ${{ inputs.package-name }}
+          mypy ${{ inputs.package-name }} --install-types --non-interactive --config-file pyproject.toml
         env:
           PIP_DISABLE_PIP_VERSION_CHECK: 1
-          PACKAGE_NAME_1: ${{ secrets.PACKAGE_NAME }}
 
       - name: Save linter reports
         if: always()
