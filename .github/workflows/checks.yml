@@ -130,8 +130,7 @@ jobs:
           path: coverage.xml
 
       - name: Upload coverage reports to Codecov
-#        if: ${{ github.ref == 'refs/heads/main' && github.repository == 'openweathermap/deker'}}
-        if: ${{ github.repository == 'openweathermap/deker'}}
+        if: ${{ github.ref == 'refs/heads/main' && github.repository == 'openweathermap/deker'}}
         uses: codecov/codecov-action@v3
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
