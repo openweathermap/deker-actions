@@ -18,7 +18,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: .venv
-          key: ${{ runner.os }}-${{ inputs.python-version }}-${{ hashFiles('pyproject.toml', 'poetry.lock') }}
+          key: ${{ runner.os }}-venv-${{ inputs.python-version }}-${{ hashFiles('pyproject.toml', 'poetry.lock') }}
 
       - name: Make docs
         run: |
