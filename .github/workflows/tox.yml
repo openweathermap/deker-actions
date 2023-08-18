@@ -3,31 +3,32 @@ name: tox
 on:
   workflow_call:
     inputs:
-      package-name:
-        required: true
-        type: string
       min-coverage:
         required: true
         type: number
+    secrets:
+      PACKAGE_NAME:
+        description: 'Caller package name'
+        required: true
 
 jobs:
   py39:
     uses: ./.github/workflows/checks.yml
     with:
       python-version: "3.9"
-      package-name: ${{ inputs.package-name }}
+      package-name: ${{ secrets.PACKAGE_NAME }}
       min-coverage: ${{ inputs.min-coverage }}
 
   py310:
     uses: ./.github/workflows/checks.yml
     with:
       python-version: "3.10"
-      package-name: ${{ inputs.package-name }}
+      package-name: ${{ secrets.PACKAGE_NAME }}
       min-coverage: ${{ inputs.min-coverage }}
 
   py311:
     uses: ./.github/workflows/checks.yml
     with:
       python-version: "3.11"
-      package-name: ${{ inputs.package-name }}
+      package-name: ${{ secrets.PACKAGE_NAME }}
       min-coverage: ${{ inputs.min-coverage }}

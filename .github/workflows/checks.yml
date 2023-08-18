@@ -6,15 +6,13 @@ on:
       python-version:
         required: true
         type: string
-      package-name:
-        required: true
-        type: string
       min-coverage:
         required: true
         type: number
-
-env:
-  PACKAGE_NAME: ${{ inputs.package-name }}
+    secrets:
+      PACKAGE_NAME:
+        description: 'Caller package name'
+        required: true
 
 jobs:
   setup:
@@ -43,12 +41,11 @@ jobs:
       - name: Run linters and checks
         run: |
           source .venv/bin/activate
-          echo ${{ inputs.package-name }}
-          echo $PACKAGE_NAME
-          isort ${{ inputs.package-name }}
-          black ${{ inputs.package-name }}
-          flake8 ${{ inputs.package-name }}
-          mypy ${{ inputs.package-name }} --install-types --non-interactive --config-file pyproject.toml
+          echo ${{ secrets.PACKAGE_NAME }}
+          isort ${{ secrets.PACKAGE_NAME }}
+          black ${{ secrets.PACKAGE_NAME }}
+          flake8 ${{ secrets.PACKAGE_NAME }}
+          mypy ${{ secrets.PACKAGE_NAME }} --install-types --non-interactive --config-file pyproject.toml
         env:
           PIP_DISABLE_PIP_VERSION_CHECK: 1
 
