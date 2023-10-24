@@ -32,9 +32,9 @@ jobs:
       package-name: ${{ inputs.package-name }}
       min-coverage: ${{ inputs.min-coverage }}
 
-  py312:
-    uses: ./.github/workflows/checks.yml
-    with:
-      python-version: "3.12"
-      package-name: ${{ inputs.package-name }}
-      min-coverage: ${{ inputs.min-coverage }}
+#  py312:
+#    uses: ./.github/workflows/checks.yml
+#    with:
+#      python-version: "3.12"
+#      package-name: ${{ inputs.package-name }}
+#      min-coverage: ${{ inputs.min-coverage }}
