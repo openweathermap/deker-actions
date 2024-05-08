@@ -53,7 +53,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: linter-reports
-          path: report.xml
+          path: report-${{ inputs.python-version }}.xml
 
   tests:
     needs: setup
@@ -80,7 +80,7 @@ jobs:
           max_attempts: 3
           command: |
             source .venv/bin/activate
-            pytest --random-order --junitxml=tests.xml
+            pytest --random-order --junitxml=tests-${{ inputs.python-version }}.xml
         env:
           PIP_DISABLE_PIP_VERSION_CHECK: 1
 
@@ -89,7 +89,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: test-reports
-          path: tests.xml
+          path: tests-${{ inputs.python-version }}.xml
 
   coverage:
     needs: setup
@@ -118,7 +118,7 @@ jobs:
             source .venv/bin/activate
             coverage run -m pytest
             coverage report --fail-under=${{inputs.min-coverage}}
-            coverage xml
+            coverage xml -o coverage-${{ inputs.python-version }}.xml
         env:
           PIP_DISABLE_PIP_VERSION_CHECK: 1
 
@@ -127,7 +127,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: coverage-reports
-          path: coverage.xml
+          path: coverage-${{ inputs.python-version }}.xml
 
       - name: Upload coverage reports to Codecov
         if: ${{ github.ref == 'refs/heads/main' && github.repository == 'openweathermap/deker'}}
