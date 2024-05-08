@@ -52,7 +52,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: linter-reports
+          name: linter-reports-${{ inputs.python-version }}
           path: report-${{ inputs.python-version }}.xml
 
   tests:
@@ -88,7 +88,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: test-reports
+          name: test-reports-${{ inputs.python-version }}
           path: tests-${{ inputs.python-version }}.xml
 
   coverage:
@@ -126,7 +126,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: coverage-reports
+          name: coverage-reports-${{ inputs.python-version }}
           path: coverage-${{ inputs.python-version }}.xml
 
       - name: Upload coverage reports to Codecov
