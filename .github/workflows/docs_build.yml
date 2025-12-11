@@ -15,7 +15,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Load virtual environment
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: .venv
           key: ${{ runner.os }}-venv-${{ inputs.python-version }}-${{ hashFiles('pyproject.toml', 'poetry.lock') }}
