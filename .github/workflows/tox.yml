@@ -12,7 +12,7 @@ on:
       python-versions:
         description: JSON list of Python versions to test on
         type: string
-        default: '["3.9", "3.10", "3.11"]'
+        default: '["3.10", "3.11"]'
 
 jobs:
   py:
