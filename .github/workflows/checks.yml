@@ -21,18 +21,18 @@ jobs:
 
   linters:
     needs: setup
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Set up Python
-        uses: actions/setup-python@v3
+        uses: actions/setup-python@v7
         with:
           python-version: ${{ inputs.python-version }}
 
       - name: Load virtual environment
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: .venv
           key: ${{ runner.os }}-venv-${{ inputs.python-version }}-${{ hashFiles('pyproject.toml', 'poetry.lock') }}
@@ -48,33 +48,26 @@ jobs:
         env:
           PIP_DISABLE_PIP_VERSION_CHECK: 1
 
-      - name: Save linter reports
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: linter-reports-${{ inputs.python-version }}
-          path: report-${{ inputs.python-version }}.xml
-
   tests:
     needs: setup
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Set up Python
-        uses: actions/setup-python@v3
+        uses: actions/setup-python@v7
         with:
           python-version: ${{ inputs.python-version }}
 
       - name: Load virtual environment
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: .venv
           key: ${{ runner.os }}-venv-${{ inputs.python-version }}-${{ hashFiles('pyproject.toml', 'poetry.lock') }}
 
       - name: Run shuffled tests
-        uses: nick-fields/retry@v2
+        uses: nick-fields/retry@v4
         with:
           timeout_minutes: 60
           max_attempts: 3
@@ -86,31 +79,31 @@ jobs:
 
       - name: Save test reports
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: test-reports-${{ inputs.python-version }}
           path: tests-${{ inputs.python-version }}.xml
 
   coverage:
     needs: setup
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Set up Python
-        uses: actions/setup-python@v3
+        uses: actions/setup-python@v7
         with:
           python-version: ${{ inputs.python-version }}
 
       - name: Load virtual environment
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: .venv
           key: ${{ runner.os }}-venv-${{ inputs.python-version }}-${{ hashFiles('pyproject.toml', 'poetry.lock') }}
 
       - name: Run coverage
-        uses: nick-fields/retry@v2
+        uses: nick-fields/retry@v4
         with:
           timeout_minutes: 60
           max_attempts: 3
@@ -124,13 +117,13 @@ jobs:
 
       - name: Save coverage reports
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: coverage-reports-${{ inputs.python-version }}
           path: coverage-${{ inputs.python-version }}.xml
 
       - name: Upload coverage reports to Codecov
         if: ${{ github.ref == 'refs/heads/main' && github.repository == 'openweathermap/deker'}}
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v7
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
