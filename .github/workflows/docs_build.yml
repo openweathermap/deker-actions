@@ -14,6 +14,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v7
 
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: ${{ inputs.python-version }}
+
       - name: Load virtual environment
         uses: actions/cache@v6
         with:
