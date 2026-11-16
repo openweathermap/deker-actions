@@ -7,6 +7,14 @@ on:
         description: The Python to build the documentation with
         required: true
         type: string
+      version:
+        description: The name the documentation is built for, a release tag (v2.0.0) or a line of releases (1.x); shown by the version switcher
+        required: true
+        type: string
+      ref:
+        description: The tag or branch to build; the one that triggered the workflow when empty
+        type: string
+        default: ""
       siblings:
         description: JSON list of the sibling repositories that tool.uv.sources points to; they are cloned next to the project
         type: string
@@ -20,14 +28,17 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v7
         with:
+          ref: ${{ inputs.ref }}
           fetch-depth: 0  # the version comes from the git tags
 
       - name: Clone the sibling repositories
         if: inputs.siblings != '[]'
+        env:
+          REF: ${{ inputs.ref || github.ref_name }}
         run: |
           for repo in $(echo '${{ inputs.siblings }}' | jq -r '.[]'); do
             echo "Cloning $repo"
-            git clone --quiet --branch "$GITHUB_REF_NAME" "https://github.com/openweathermap/$repo" "../$repo" 2>/dev/null \
+            git clone --quiet --branch "$REF" "https://github.com/openweathermap/$repo" "../$repo" 2>/dev/null \
               || git clone --quiet "https://github.com/openweathermap/$repo" "../$repo"
             echo "  $(git -C "../$repo" branch --show-current)"
           done
@@ -45,9 +56,13 @@ jobs:
         run: make docs-lint
 
       - name: Build the documentation
+        env:
+          DOCS_VERSION: ${{ inputs.version }}
         run: uv run make -C docs html
 
-      - name: Save the pages
-        uses: actions/upload-pages-artifact@v3
+      - name: Save the html
+        uses: actions/upload-artifact@v7
         with:
+          name: docs-html  # docs_publish.yml downloads it by this name
           path: docs/_build/html
+          if-no-files-found: error

@@ -2,22 +2,35 @@ name: publish_docs
 
 on:
   workflow_call:
+    inputs:
+      version:
+        description: The name the documentation is published under, a release tag (v2.0.0) or a line of releases (1.x)
+        required: true
+        type: string
+      ref:
+        description: The tag or branch docs/publish.py is taken from; the one that triggered the workflow when empty
+        type: string
+        default: ""
 
 jobs:
   publish_docs:
-    name: Publish the documentation to GitHub Pages
+    name: Publish the documentation ${{ inputs.version }}
     runs-on: ubuntu-latest
     permissions:
-      contents: read
-      pages: write
-      id-token: write
-    concurrency:
-      group: "pages"
-      cancel-in-progress: false
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+      contents: write  # the site is pushed to the gh-pages branch
     steps:
-      - name: Deploy
-        id: deployment
-        uses: actions/deploy-pages@v4
+      - name: Checkout code
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ inputs.ref }}
+
+      - name: Load the html
+        uses: actions/download-artifact@v8
+        with:
+          name: docs-html
+          path: html
+
+      - name: Publish the documentation
+        run: >
+          python docs/publish.py --html html --version "${{ inputs.version }}"
+          --repo "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}"
