@@ -4,36 +4,50 @@ on:
   workflow_call:
     inputs:
       python-version:
+        description: The Python to build the documentation with
         required: true
         type: string
+      siblings:
+        description: JSON list of the sibling repositories that tool.uv.sources points to; they are cloned next to the project
+        type: string
+        default: "[]"
 
 jobs:
   build_docs:
-    runs-on: ubuntu-26.04
+    name: Build the documentation
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v7
+        with:
+          fetch-depth: 0  # the version comes from the git tags
 
-      - name: Set up Python
-        uses: actions/setup-python@v7
+      - name: Clone the sibling repositories
+        if: inputs.siblings != '[]'
+        run: |
+          for repo in $(echo '${{ inputs.siblings }}' | jq -r '.[]'); do
+            echo "Cloning $repo"
+            git clone --quiet --branch "$GITHUB_REF_NAME" "https://github.com/openweathermap/$repo" "../$repo" 2>/dev/null \
+              || git clone --quiet "https://github.com/openweathermap/$repo" "../$repo"
+            echo "  $(git -C "../$repo" branch --show-current)"
+          done
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v10
         with:
           python-version: ${{ inputs.python-version }}
+          enable-cache: true
 
-      - name: Load virtual environment
-        uses: actions/cache@v6
-        with:
-          path: .venv
-          key: ${{ runner.os }}-venv-${{ inputs.python-version }}-${{ hashFiles('pyproject.toml', 'poetry.lock') }}
+      - name: Install the project
+        run: uv sync --all-groups --locked
 
-      - name: Make docs
-        run: |
-          source .venv/bin/activate
-          doc8 --config pyproject.toml docs/deker
-          cd ./docs
-          make html
-          awk 'NR >= 35 && NR <= 40' _build/html/index.html
+      - name: Lint the documentation
+        run: make docs-lint
 
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v5
+      - name: Build the documentation
+        run: uv run make -C docs html
+
+      - name: Save the pages
+        uses: actions/upload-pages-artifact@v3
         with:
           path: docs/_build/html

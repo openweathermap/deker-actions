@@ -1,21 +1,22 @@
-name: tox
+name: tests
 
 on:
   workflow_call:
     inputs:
-      min-coverage:
-        required: true
-        type: number
-      package-name:
-        type: string
-        required: true
       python-versions:
-        description: JSON list of Python versions to test on
+        description: JSON list of the Pythons to run the checks and the tests on
+        required: true
         type: string
-        default: '["3.10", "3.11", "3.12", "3.13", "3.14", "3.15"]'
+      siblings:
+        description: JSON list of the sibling repositories that tool.uv.sources points to; they are cloned next to the project
+        type: string
+        default: "[]"
+    secrets:
+      CODECOV_TOKEN:
+        required: false
 
 jobs:
-  py:
+  checks:
     strategy:
       fail-fast: false
       matrix:
@@ -23,5 +24,5 @@ jobs:
     uses: ./.github/workflows/checks.yml
     with:
       python-version: ${{ matrix.python-version }}
-      package-name: ${{ inputs.package-name }}
-      min-coverage: ${{ inputs.min-coverage }}
+      siblings: ${{ inputs.siblings }}
+    secrets: inherit

@@ -5,7 +5,8 @@ on:
 
 jobs:
   publish_docs:
-    runs-on: ubuntu-26.04
+    name: Publish the documentation to GitHub Pages
+    runs-on: ubuntu-latest
     permissions:
       contents: read
       pages: write
@@ -17,6 +18,6 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - name: Deploy to GitHub Pages
+      - name: Deploy
         id: deployment
-        uses: actions/deploy-pages@v5
+        uses: actions/deploy-pages@v4
