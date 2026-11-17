@@ -4,36 +4,65 @@ on:
   workflow_call:
     inputs:
       python-version:
+        description: The Python to build the documentation with
         required: true
         type: string
+      version:
+        description: The name the documentation is built for, a release tag (v2.0.0) or a line of releases (1.x); shown by the version switcher
+        required: true
+        type: string
+      ref:
+        description: The tag or branch to build; the one that triggered the workflow when empty
+        type: string
+        default: ""
+      siblings:
+        description: JSON list of the sibling repositories that tool.uv.sources points to; they are cloned next to the project
+        type: string
+        default: "[]"
 
 jobs:
   build_docs:
-    runs-on: ubuntu-26.04
+    name: Build the documentation
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v7
+        with:
+          ref: ${{ inputs.ref }}
+          fetch-depth: 0  # the version comes from the git tags
 
-      - name: Set up Python
-        uses: actions/setup-python@v7
+      - name: Clone the sibling repositories
+        if: inputs.siblings != '[]'
+        env:
+          REF: ${{ inputs.ref || github.ref_name }}
+        run: |
+          for repo in $(echo '${{ inputs.siblings }}' | jq -r '.[]'); do
+            echo "Cloning $repo"
+            git clone --quiet --branch "$REF" "https://github.com/openweathermap/$repo" "../$repo" 2>/dev/null \
+              || git clone --quiet "https://github.com/openweathermap/$repo" "../$repo"
+            echo "  $(git -C "../$repo" branch --show-current)"
+          done
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v10.3.3
         with:
           python-version: ${{ inputs.python-version }}
+          enable-cache: true
 
-      - name: Load virtual environment
-        uses: actions/cache@v6
+      - name: Install the project
+        run: uv sync --all-groups --locked
+
+      - name: Lint the documentation
+        run: make docs-lint
+
+      - name: Build the documentation
+        env:
+          DOCS_VERSION: ${{ inputs.version }}
+        run: uv run make -C docs html
+
+      - name: Save the html
+        uses: actions/upload-artifact@v7
         with:
-          path: .venv
-          key: ${{ runner.os }}-venv-${{ inputs.python-version }}-${{ hashFiles('pyproject.toml', 'poetry.lock') }}
-
-      - name: Make docs
-        run: |
-          source .venv/bin/activate
-          doc8 --config pyproject.toml docs/deker
-          cd ./docs
-          make html
-          awk 'NR >= 35 && NR <= 40' _build/html/index.html
-
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v5
-        with:
+          name: docs-html  # docs_publish.yml downloads it by this name
           path: docs/_build/html
+          if-no-files-found: error
