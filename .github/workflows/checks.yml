@@ -11,14 +11,20 @@ on:
         description: JSON list of the sibling repositories that tool.uv.sources points to; they are cloned next to the project
         type: string
         default: "[]"
+      numpy-version:
+        description: The lowest NumPy supported on this Python; when set, the project is resolved anew with it instead of the lock and only the tests run
+        type: string
+        default: ""
     secrets:
       CODECOV_TOKEN:
         required: false
 
 jobs:
   checks:
-    name: Python ${{ inputs.python-version }}
+    name: Python ${{ inputs.python-version }}${{ inputs.numpy-version != '' && format(', NumPy {0}', inputs.numpy-version) || '' }}
     runs-on: ubuntu-latest
+    env:
+      LABEL: ${{ inputs.python-version }}${{ inputs.numpy-version != '' && format('-numpy-{0}', inputs.numpy-version) || '' }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v7
@@ -42,26 +48,39 @@ jobs:
           enable-cache: true
 
       - name: Install the project
+        if: inputs.numpy-version == ''
         run: uv sync --all-groups --locked
 
+      - name: Install the project with NumPy ${{ inputs.numpy-version }}
+        if: inputs.numpy-version != ''
+        # not from the lock: it holds the newest NumPy and packages that need it (pandas 3); the other packages resolve
+        # to the newest versions that work with this NumPy, as they do for a user who has it. tool.uv.sources are honoured
+        run: |
+          uv venv --python ${{ inputs.python-version }}
+          uv pip install --editable . --group dev "numpy==${{ inputs.numpy-version }}"
+          uv run --no-sync python -c "import importlib.metadata as m; v = {d.metadata['Name'].lower(): d.version for d in m.distributions()}; print(*(f'{p} {v[p]}' for p in ('numpy', 'pandas', 'xarray', 'h5py') if p in v))"
+
       - name: Static checks
+        if: inputs.numpy-version == ''
         run: make check
 
       - name: Tests with coverage
-        run: make coverage PYTEST_ARGS="--junitxml=tests-${{ inputs.python-version }}.xml --cov-report=xml:coverage-${{ inputs.python-version }}.xml"
+        env:
+          UV_NO_SYNC: 1  # the floor environment is not the locked one: uv run must not sync it back
+        run: make coverage PYTEST_ARGS="--junitxml=tests-${{ env.LABEL }}.xml --cov-report=xml:coverage-${{ env.LABEL }}.xml"
 
       - name: Save the reports
         if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: reports-${{ inputs.python-version }}
+          name: reports-${{ env.LABEL }}
           path: |
-            tests-${{ inputs.python-version }}.xml
-            coverage-${{ inputs.python-version }}.xml
+            tests-${{ env.LABEL }}.xml
+            coverage-${{ env.LABEL }}.xml
 
       - name: Upload the coverage to Codecov
-        if: github.ref == 'refs/heads/main' && github.repository == 'openweathermap/deker'
+        if: github.ref == 'refs/heads/main' && github.repository == 'openweathermap/deker' && inputs.numpy-version == ''
         uses: codecov/codecov-action@v5
         with:
-          files: coverage-${{ inputs.python-version }}.xml
+          files: coverage-${{ env.LABEL }}.xml
           token: ${{ secrets.CODECOV_TOKEN }}

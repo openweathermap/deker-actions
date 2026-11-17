@@ -11,6 +11,10 @@ on:
         description: JSON list of the sibling repositories that tool.uv.sources points to; they are cloned next to the project
         type: string
         default: "[]"
+      numpy-floors:
+        description: JSON list of {python, numpy} pairs, the lowest NumPy of every Python; every pair gets a job that runs the tests with that NumPy instead of the locked one
+        type: string
+        default: "[]"
     secrets:
       CODECOV_TOKEN:
         required: false
@@ -25,4 +29,17 @@ jobs:
     with:
       python-version: ${{ matrix.python-version }}
       siblings: ${{ inputs.siblings }}
+    secrets: inherit
+
+  numpy-floors:
+    if: inputs.numpy-floors != '[]'
+    strategy:
+      fail-fast: false
+      matrix:
+        include: ${{ fromJSON(inputs.numpy-floors) }}
+    uses: ./.github/workflows/checks.yml
+    with:
+      python-version: ${{ matrix.python }}
+      siblings: ${{ inputs.siblings }}
+      numpy-version: ${{ matrix.numpy }}
     secrets: inherit
